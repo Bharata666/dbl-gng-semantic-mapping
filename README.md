@@ -8,7 +8,7 @@ Repository providing the DBL-GNG source code for the paper (manuscript in prepar
   <img src="assets/pipeline.png" alt="Pipeline from RGB-D and LiDAR input to the semantic map and per-object DBL-GNG networks" width="1150" />
 </p>
 
-*System overview (illustration). This repository provides the **DBL-GNG Shape Representation** block.*
+*System overview. This repository provides the **DBL-GNG Shape Representation** block.*
 
 This repository contains **only the DBL-GNG stage**: a ROS 2 node that accumulates the points of each mapped object and trains one
 [Distributed Batch Learning Growing Neural Gas](https://github.com/CornerSiow/DBL-GNG) network per object.
