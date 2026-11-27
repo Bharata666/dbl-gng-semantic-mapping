@@ -12,7 +12,7 @@
 <body>
 <section id="banner">
   <div class="logos"><img src="static/images/logo-telu.png" alt=""><span>Telkom University Surabaya</span></div>
-  <video playsinline autoplay muted loop poster="static/images/teaser.jpg"><source src="static/videos/teaser.mp4" type="video/mp4"></video>
+  <video playsinline autoplay muted loop poster="static/images/teaser.jpg?v=398b7b70"><source src="static/videos/teaser.mp4?v=a51d69d0" type="video/mp4"></video>
   <div class="inner">
     <h2 class="short"><span>YOLO11s-seg &middot; RGB-D &middot; DBL-GNG</span></h2>
     <h2 class="long">Intelligent Robot Guidance: Mask-Based Object Perception and Semantic Mapping on an Indoor Guide Robot Using YOLO11s-seg and an RGB-D Camera</h2>
@@ -27,7 +27,7 @@
 
 <div class="band"><div class="inner">
   <div class="short-abstract">A ROS 2 pipeline that turns RGB-D instance masks into a semantic object map, with a DBL-GNG shape network for every object mapped by an indoor guide robot.</div>
-  <div class="wide"><video playsinline controls preload="metadata" poster="static/images/poster.jpg"><source src="static/videos/presentation.mp4" type="video/mp4">Your browser cannot play this video.</video></div>
+  <div class="wide"><video playsinline controls preload="metadata" poster="static/images/poster.jpg?v=dc094600"><source src="static/videos/presentation.mp4?v=212943f9" type="video/mp4">Your browser cannot play this video.</video></div>
 </div></div>
 
 <div id="abstract" class="band grey"><div class="inner"><p class="wide">Indoor robots need maps that record not only free and occupied space but also the identity and location of objects. This paper presents a ROS 2 pipeline in which a YOLO11s-seg model segments nine object classes in the images of an RGB-D camera, and the instance masks select the depth pixels of each object before any geometry is built. The pixels become object point clouds in the map frame, managed in a global semantic map through data association and an existence likelihood, while a Distributed Batch Learning Growing Neural Gas (DBL-GNG) network gives each object a shape graph and trains a median of 6.9 times faster than a standard GNG. On the validation set, the model reached a mask mAP50 of 0.808. Valid depth pixels inside the masks averaged 94.4% at 1.0&ndash;1.5 m but only 28.2% at 3.0&ndash;4.5 m. In a real laboratory, polygons built from the DBL-GNG graphs gave the lowest Hausdorff distance (0.391 m) and center-of-mass distance (0.195 m) and the highest precision and F1-score (86.21%) among four methods, with 25 of 29 reference objects mapped correctly. The comparison is indicative: the runs are mostly single, and the baselines are re-implementations with a different matching rule.</p></div></div>
