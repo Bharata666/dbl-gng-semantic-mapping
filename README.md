@@ -5,14 +5,20 @@ Repository providing the DBL-GNG source code for the paper (manuscript in prepar
 > Bharata Kukuh Hariyanto, Mohamad Yani, Moch. Iskandar Riansyah, Naoyuki Kubota, Fajar Hidayatullah and Muhammad Rio Fernanda
 
 <p align="center">
-  <img src="assets/overview.png" alt="Point cloud, polygon and DBL-GNG network of mapped objects" width="900" />
+  <img src="assets/pipeline.png" alt="Pipeline from RGB-D and LiDAR input to the semantic map and per-object DBL-GNG networks" width="1150" />
 </p>
 
-*Left to right: object point clouds, 2D polygons, DBL-GNG networks (red: nodes, green: edges).*
+*System overview (illustration). This repository provides the **DBL-GNG Shape Representation** block.*
 
 This repository contains **only the DBL-GNG stage**: a ROS 2 node that accumulates the points of each mapped object and trains one
 [Distributed Batch Learning Growing Neural Gas](https://github.com/CornerSiow/DBL-GNG) network per object.
 The segmentation, RGB-D point cloud, polygon and map fusion nodes of the pipeline are not included.
+
+<p align="center">
+  <img src="assets/overview.png" alt="Point cloud, polygon and DBL-GNG network of mapped objects" width="900" />
+</p>
+
+*Left to right: object point clouds, 2D polygons, DBL-GNG networks (red: nodes, green: edges).*
 
 ## Setup
 Tested on ROS 2 Humble with Python 3 and NumPy.
