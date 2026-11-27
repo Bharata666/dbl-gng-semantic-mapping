@@ -3,7 +3,7 @@
 <package format="3">
   <name>dbl_gng_objects</name>
   <version>1.0.0</version>
-  <description>Per-object DBL-GNG shape representation for ROS 2 semantic maps</description>
+  <description>Per-object DBL-GNG topological representation for ROS 2 semantic maps</description>
   <maintainer email="bharata@todo.todo">bharata</maintainer>
   <license>Apache-2.0</license>
 

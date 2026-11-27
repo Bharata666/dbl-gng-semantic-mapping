@@ -14,7 +14,7 @@ setup(
     zip_safe=True,
     maintainer='bharata',
     maintainer_email='bharata@todo.todo',
-    description='Per-object DBL-GNG shape representation for ROS 2 semantic maps',
+    description='Per-object DBL-GNG topological representation for ROS 2 semantic maps',
     license='Apache-2.0',
     entry_points={'console_scripts': ['gng_objects_node = dbl_gng_objects.gng_objects_node:main']},
 )
