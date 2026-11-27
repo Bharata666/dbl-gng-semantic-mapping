@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Intelligent Robot Guidance: Mask-Based Object Perception and Semantic Mapping on an Indoor Guide Robot</title>
+<meta name="description" content="A ROS 2 pipeline that turns RGB-D instance masks into a semantic object map, with a DBL-GNG shape network for every mapped object.">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,200;0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+<section id="banner">
+  <div class="logos"><img src="static/images/logo-telu.png" alt=""><span>Telkom University Surabaya</span></div>
+  <video playsinline autoplay muted loop poster="static/images/teaser.jpg"><source src="static/videos/teaser.mp4" type="video/mp4"></video>
+  <div class="inner">
+    <h2 class="short"><span>YOLO11s-seg &middot; RGB-D &middot; DBL-GNG</span></h2>
+    <h2 class="long">Intelligent Robot Guidance: Mask-Based Object Perception and Semantic Mapping on an Indoor Guide Robot Using YOLO11s-seg and an RGB-D Camera</h2>
+    <p class="byline"><span>Bharata Kukuh Hariyanto</span>, &nbsp;<span>Mohamad Yani</span>, &nbsp;<span>Moch. Iskandar Riansyah</span>, &nbsp;<span>Naoyuki Kubota</span>, &nbsp;<span>Fajar Hidayatullah</span>, &nbsp;<span>Muhammad Rio Fernanda</span></p>
+    <div class="button-row">
+      <span class="button off" title="Not yet available"><i class="fa-solid fa-file-pdf"></i> Paper (soon)</span>
+      <a class="button" href="https://github.com/Bharata666/dbl-gng-semantic-mapping"><i class="fa-brands fa-github"></i> Code</a>
+      <a class="button" href="#publication"><i class="fa-solid fa-book"></i> BibTeX</a>
+    </div>
+  </div>
+</section>
+
+<div class="band"><div class="inner">
+  <div class="short-abstract">A ROS 2 pipeline that turns RGB-D instance masks into a semantic object map, with a DBL-GNG shape network for every object mapped by an indoor guide robot.</div>
+  <div class="wide"><video playsinline controls preload="metadata" poster="static/images/poster.jpg"><source src="static/videos/presentation.mp4" type="video/mp4">Your browser cannot play this video.</video></div>
+</div></div>
+
+<div id="abstract" class="band grey"><div class="inner"><p class="wide">Indoor robots need maps that record not only free and occupied space but also the identity and location of objects. This paper presents a ROS 2 pipeline in which a YOLO11s-seg model segments nine object classes in the images of an RGB-D camera, and the instance masks select the depth pixels of each object before any geometry is built. The pixels become object point clouds in the map frame, managed in a global semantic map through data association and an existence likelihood, while a Distributed Batch Learning Growing Neural Gas (DBL-GNG) network gives each object a shape graph and trains a median of 6.9 times faster than a standard GNG. On the validation set, the model reached a mask mAP50 of 0.808. Valid depth pixels inside the masks averaged 94.4% at 1.0&ndash;1.5 m but only 28.2% at 3.0&ndash;4.5 m. In a real laboratory, polygons built from the DBL-GNG graphs gave the lowest Hausdorff distance (0.391 m) and center-of-mass distance (0.195 m) and the highest precision and F1-score (86.21%) among four methods, with 25 of 29 reference objects mapped correctly. The comparison is indicative: the runs are mostly single, and the baselines are re-implementations with a different matching rule.</p></div></div>
+
+<div id="approach" class="band"><div class="inner">
+  <div class="title"><h2>Technical Approach</h2></div>
+  <div class="figure"><a href="static/images/pipeline.png"><img src="static/images/pipeline.png" alt="System overview from RGB-D and LiDAR input to the semantic map and DBL-GNG networks"></a><div class="caption">System overview: the robot uses ROS 2 Humble. YOLO11s-seg masks select the depth pixels of each object, which form object point clouds and 2D polygons. The global map transforms them to the map frame, associates them over time and updates an existence likelihood. DBL-GNG reads the global map and builds one shape network per object.</div></div>
+  <div class="figure"><a href="static/images/representations.png"><img src="static/images/representations.png" alt="One working place as point clouds, polygons and DBL-GNG networks"></a><div class="caption">One working place in four forms: original point cloud, object point clouds, 2D polygons, and DBL-GNG networks (red: nodes, green: edges).</div></div>
+  <div class="figure"><a href="static/images/likelihood.png"><img src="static/images/likelihood.png" alt="Existence likelihood over time of a chair and a desk" style="max-width:640px;margin-left:auto;margin-right:auto"></a><div class="caption">Existence likelihood over time of a chair and a desk. An object is deleted when its likelihood falls below the threshold.</div></div>
+  <div class="figure"><a href="static/images/real_maps.png"><img src="static/images/real_maps.png" alt="Semantic maps of the real laboratory produced by four methods"></a><div class="caption">Semantic maps of the real laboratory: (a) DBL-GNG, (b) Standard GNG, (c) LTC-Mapping, (d) Online Semantic Object Mapping. The comparison is indicative: the runs are mostly single, and the baselines are re-implementations with a different matching rule.</div></div>
+</div></div>
+
+<div id="code" class="band"><div class="inner"><div class="title"><h2>Code</h2></div>
+  <p>The code release contains the DBL-GNG stage of the pipeline as a ROS 2 Humble package. The segmentation, point cloud, polygon and map fusion nodes are not part of the release.</p>
+  <ul class="code-list">
+    <li><code>dbl_gng_objects</code>: accumulates the points of each mapped object and publishes one network of nodes and edges per object</li>
+    <li><code>dbl_gng_core.py</code>: port of <a href="https://github.com/CornerSiow/DBL-GNG">CornerSiow/DBL-GNG</a> (MIT License); the package is released under Apache-2.0</li>
+  </ul>
+  <p>Repository: <a href="https://github.com/Bharata666/dbl-gng-semantic-mapping">github.com/Bharata666/dbl-gng-semantic-mapping</a></p>
+</div></div>
+
+<div id="publication" class="band grey"><div class="inner"><div class="title"><h2>Publications</h2></div>
+  <p>If you find our work useful, please consider citing our paper:</p>
+  <div class="cite wide"><p>Bharata Kukuh Hariyanto, Mohamad Yani, Moch. Iskandar Riansyah, Naoyuki Kubota, Fajar Hidayatullah, and Muhammad Rio Fernanda<br>Intelligent Robot Guidance: Mask-Based Object Perception and Semantic Mapping on an Indoor Guide Robot Using YOLO11s-seg and an RGB-D Camera<br><em>Manuscript</em>, 2026.<br>
+    (<a href="#publication" onclick="var b=document.getElementById('bib');b.hidden=!b.hidden;return false">BibTeX</a>)</p>
+    <pre id="bib" hidden>@unpublished{hariyanto2026guidance,
+  title  = {Intelligent Robot Guidance: Mask-Based Object Perception and Semantic Mapping on an Indoor Guide Robot Using YOLO11s-seg and an RGB-D Camera},
+  author = {Hariyanto, Bharata Kukuh and Yani, Mohamad and Riansyah, Moch. Iskandar and Kubota, Naoyuki and Hidayatullah, Fajar and Fernanda, Muhammad Rio},
+  year   = {2026},
+  note   = {Manuscript}
+}</pre></div>
+</div></div>
+
+<div id="authors" class="band"><div class="inner"><div class="title"><h2>Authors</h2></div><div class="author"><h3>Bharata Kukuh Hariyanto</h3><p>Telkom University</p></div><div class="author"><h3>Mohamad Yani</h3><p>Telkom University</p></div><div class="author"><h3>Moch. Iskandar Riansyah</h3><p>Telkom University</p></div><div class="author"><h3>Naoyuki Kubota</h3><p>Tokyo Metropolitan University</p></div><div class="author"><h3>Fajar Hidayatullah</h3><p>Telkom University</p></div><div class="author"><h3>Muhammad Rio Fernanda</h3><p>Telkom University</p></div></div></div>
+
+<footer><p>&copy; The authors, 2026. All rights reserved.</p></footer>
+</body>
+</html>
