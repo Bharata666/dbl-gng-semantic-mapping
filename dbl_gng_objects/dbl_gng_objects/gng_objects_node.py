@@ -1,15 +1,15 @@
-"""Node representasi DBL-GNG per objek untuk ltc_mapping (opsional; aktif dengan gng_viz:=true di launch).
+"""Node representasi DBL-GNG per objek untuk peta semantik.
 
 Membaca (tanpa mengubah apa pun):
-  /ltc/global_objects_pointcloud  titik objek per frame di frame `map` (class_id)
-  /ltc/global_semantic_map        objek peta (id, kelas, kotak)
-  /ltc/reset_map_cmd              kosongkan peta (GNG ikut dikosongkan; bila persist_file diisi, GNG DIPERTAHANKAN dan diarsipkan)
-  /ltc/gng_clear_saved            hapus semua GNG (termasuk yang tersimpan di berkas)
+  /semantic_map/global_objects_pointcloud  titik objek per frame di frame `map` (class_id)
+  /semantic_map/global_semantic_map        objek peta (id, kelas, kotak)
+  /semantic_map/reset_map_cmd              kosongkan peta (GNG ikut dikosongkan; bila persist_file diisi, GNG DIPERTAHANKAN dan diarsipkan)
+  /semantic_map/gng_clear_saved            hapus semua GNG (termasuk yang tersimpan di berkas)
 Menerbitkan:
-  /ltc/gng_points   (PointCloud2, xyzrgb)  titik objek terkumpul, berwarna kelas
-  /ltc/gng_markers  (MarkerArray)          node (SPHERE_LIST) dan edge (LINE_LIST) DBL-GNG per objek, berwarna kelas
+  /semantic_map/gng_points   (PointCloud2, xyzrgb)  titik objek terkumpul, berwarna kelas
+  /semantic_map/gng_markers  (MarkerArray)          node (SPHERE_LIST) dan edge (LINE_LIST) DBL-GNG per objek, berwarna kelas
 
-DBL-GNG: ltc_mapping/dbl_gng_core.py (salinan tanpa perubahan dari proyek dbl_gng_pca, MIT, Mathematics 12(12):1909, 2024).
+DBL-GNG: dbl_gng_objects/dbl_gng_core.py (salinan tanpa perubahan dari proyek dbl_gng_pca, MIT, Mathematics 12(12):1909, 2024).
 """
 
 import json
@@ -39,9 +39,9 @@ def _pack_rgb(r: int, g: int, b: int) -> float:
 class GngObjectsNode(Node):
     def __init__(self) -> None:
         super().__init__('gng_objects_node')
-        self.declare_parameter('points_topic', '/ltc/global_objects_pointcloud')
-        self.declare_parameter('map_topic', '/ltc/global_semantic_map')
-        self.declare_parameter('reset_topic', '/ltc/reset_map_cmd')
+        self.declare_parameter('points_topic', '/semantic_map/global_objects_pointcloud')
+        self.declare_parameter('map_topic', '/semantic_map/global_semantic_map')
+        self.declare_parameter('reset_topic', '/semantic_map/reset_map_cmd')
         self.declare_parameter('target_frame', 'map')
         self.declare_parameter('voxel', 0.02)
         self.declare_parameter('max_points', 1500)
@@ -62,7 +62,7 @@ class GngObjectsNode(Node):
         self.declare_parameter('keep_unseen', False)
         self.declare_parameter('save_interval_s', 10.0)
         self.declare_parameter('supersede_dist', 0.5)       # arsip diganti bila objek kelas sama terdeteksi lagi dalam jarak ini
-        self.declare_parameter('clear_saved_topic', '/ltc/gng_clear_saved')
+        self.declare_parameter('clear_saved_topic', '/semantic_map/gng_clear_saved')
 
         g = lambda k: self.get_parameter(k).value
         try:
@@ -87,9 +87,9 @@ class GngObjectsNode(Node):
             elif n:
                 self.get_logger().info(f'GNG tersimpan dimuat: {n} objek dari {self.persist_file}')
 
-        self.pub_markers = self.create_publisher(MarkerArray, '/ltc/gng_markers', 10)
+        self.pub_markers = self.create_publisher(MarkerArray, '/semantic_map/gng_markers', 10)
         # reliable: pesan awan titik cukup besar dan jarang; best-effort sering hilang di WiFi yang sibuk
-        self.pub_cloud = self.create_publisher(PointCloud2, '/ltc/gng_points', QoSProfile(depth=1, reliability=ReliabilityPolicy.RELIABLE))
+        self.pub_cloud = self.create_publisher(PointCloud2, '/semantic_map/gng_points', QoSProfile(depth=1, reliability=ReliabilityPolicy.RELIABLE))
         self.create_subscription(PointCloud2, str(g('points_topic')), self.on_points, qos_profile_sensor_data)
         self.create_subscription(String, str(g('map_topic')), self.on_map, QoSProfile(depth=5, reliability=ReliabilityPolicy.RELIABLE))
         self.create_subscription(Empty, str(g('reset_topic')), self.on_reset, 10)

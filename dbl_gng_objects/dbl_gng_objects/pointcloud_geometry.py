@@ -1,4 +1,4 @@
-"""3D Geometry and Point Cloud Processing Utilities for LTC Mapping.
+"""3D Geometry and Point Cloud Processing Utilities for semantic mapping.
 
 Handles ROS image encoding/decoding, ASUS Xtion depth parsing, pinhole back-projection,
 voxel downsampling, statistical outlier removal, 2D convex hull footprint generation,

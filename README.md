@@ -30,15 +30,16 @@ source install/setup.bash
 ros2 run dbl_gng_objects gng_objects_node
 ```
 The node needs a semantic mapping system that publishes the two input topics below.
+Input topic names can be changed with the parameters `points_topic`, `map_topic`, `reset_topic` and `clear_saved_topic`; use ROS remapping for the output topics.
 
 | Direction | Topic | Type | Content |
 |---|---|---|---|
-| in | `/ltc/global_objects_pointcloud` | `sensor_msgs/PointCloud2` | fields `x`, `y`, `z`, `class_id` in the `map` frame |
-| in | `/ltc/global_semantic_map` | `std_msgs/String` | JSON: `{"objects": [{"global_id", "class_id", "bbox_map": {"min_bound", "max_bound"}, "centroid_map"}]}` |
-| in | `/ltc/reset_map_cmd` | `std_msgs/Empty` | reset the networks (archived if `persist_file` is set) |
-| in | `/ltc/gng_clear_saved` | `std_msgs/Empty` | delete all networks, including saved ones |
-| out | `/ltc/gng_markers` | `visualization_msgs/MarkerArray` | nodes and edges per object |
-| out | `/ltc/gng_points` | `sensor_msgs/PointCloud2` | accumulated object points |
+| in | `/semantic_map/global_objects_pointcloud` | `sensor_msgs/PointCloud2` | fields `x`, `y`, `z`, `class_id` in the `map` frame |
+| in | `/semantic_map/global_semantic_map` | `std_msgs/String` | JSON: `{"objects": [{"global_id", "class_id", "bbox_map": {"min_bound", "max_bound"}, "centroid_map"}]}` |
+| in | `/semantic_map/reset_map_cmd` | `std_msgs/Empty` | reset the networks (archived if `persist_file` is set) |
+| in | `/semantic_map/gng_clear_saved` | `std_msgs/Empty` | delete all networks, including saved ones |
+| out | `/semantic_map/gng_markers` | `visualization_msgs/MarkerArray` | nodes and edges per object |
+| out | `/semantic_map/gng_points` | `sensor_msgs/PointCloud2` | accumulated object points |
 
 ## Customize
 | Parameter | Default | Meaning |

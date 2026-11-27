@@ -1,4 +1,4 @@
-"""YOLO Palette and Class Inspection Module for LTC Mapping.
+"""YOLO Palette and Class Inspection Module for semantic mapping.
 
 Encapsulates the official Ultralytics YOLOv11 color palette and dynamic
 model metadata extraction. Ensures strict color consistency across 2D mask overlays,
@@ -111,7 +111,7 @@ def load_model_classes(model_path: str) -> Dict[int, str]:
 
 
 class YoloPalette:
-    """Manages color assignments and class metadata for LTC Mapping."""
+    """Manages color assignments and class metadata for semantic mapping."""
 
     def __init__(
         self,

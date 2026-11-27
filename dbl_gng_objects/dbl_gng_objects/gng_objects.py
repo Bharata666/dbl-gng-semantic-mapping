@@ -1,11 +1,11 @@
-"""Logika murni (tanpa ROS) representasi DBL-GNG per objek untuk ltc_mapping.
+"""Logika murni (tanpa ROS) representasi DBL-GNG per objek untuk peta semantik.
 
 Titik tiap objek (frame `map`) dikumpulkan dari beberapa pandangan, dikurangi per voxel, lalu dilatih DBL-GNG
 (inti `dbl_gng_core.py`, salinan tanpa perubahan dari proyek dbl_gng_pca: https://github.com/CornerSiow/DBL-GNG, MIT,
 Mathematics 12(12):1909, 2024) menjadi node + edge. Parameter pelatihan sama dengan object_store.py di dbl_gng_pca:
 M = clip(N/15, 20, 200), K = clip(M/8, 3, 12), 40 epoch.
 
-Modul ini hanya MEMBACA data ltc_mapping; tidak mengubah peta objek, YOLO, atau point cloud.
+Modul ini hanya MEMBACA data peta semantik; tidak mengubah peta objek, YOLO, atau point cloud.
 """
 
 import os
@@ -74,7 +74,7 @@ KEYMUL = 1_000_000          # kunci entri = epoch * KEYMUL + id objek peta (hany
 class GngObjectStore:
     """Titik, node, dan edge DBL-GNG per objek peta (aman untuk dipakai dari beberapa thread).
 
-    persist=False (bawaan): perilaku lama persis. persist=True: GNG tidak ikut terhapus saat peta objek dikosongkan, ltc dinyalakan ulang, atau objeknya keluar pandangan/hilang dari daftar peta; entri sesi
+    persist=False (bawaan): perilaku lama persis. persist=True: GNG tidak ikut terhapus saat peta objek dikosongkan, node pemetaan dinyalakan ulang, atau objeknya keluar pandangan/hilang dari daftar peta; entri sesi
     lama diarsipkan (tetap tampil dan bisa disimpan ke berkas), dan diganti otomatis bila objek kelas sama terdeteksi lagi di dekatnya.
     """
 

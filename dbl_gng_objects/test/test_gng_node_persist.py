@@ -61,7 +61,7 @@ def test_gng_is_saved_loaded_after_restart_kept_on_map_reset_and_cleared_on_requ
     ids_before = {s['id'] for s in n.store.snapshot(0)}
     close(n)
 
-    n2 = make_node(path)                                                   # ltc dinyalakan ulang
+    n2 = make_node(path)                                                   # node pemetaan dinyalakan ulang
     snap = n2.store.snapshot(0)
     assert len(snap) == 1 and len(snap[0]['nodes']) > 0 and snap[0]['id'] in ids_before                 # GNG lama ada lagi
     n2.on_timer(); n2._publish(force=True)
