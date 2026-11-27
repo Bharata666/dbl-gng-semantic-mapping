@@ -7,7 +7,7 @@ Membaca (tanpa mengubah apa pun):
   /semantic_map/gng_clear_saved            hapus semua GNG (termasuk yang tersimpan di berkas)
 Menerbitkan:
   /semantic_map/gng_points   (PointCloud2, xyzrgb)  titik objek terkumpul, berwarna kelas
-  /semantic_map/gng_markers  (MarkerArray)          node (SPHERE_LIST) dan edge (LINE_LIST) DBL-GNG per objek, berwarna kelas
+  /semantic_map/gng_markers  (MarkerArray)          node (SPHERE_LIST) dan edge (LINE_LIST) DBL-GNG per objek berwarna kelas, serta label nama objek (TEXT_VIEW_FACING)
 
 DBL-GNG: dbl_gng_objects/dbl_gng_core.py (salinan tanpa perubahan dari proyek dbl_gng_pca, MIT, Mathematics 12(12):1909, 2024).
 """
@@ -29,7 +29,7 @@ from visualization_msgs.msg import Marker, MarkerArray
 import sensor_msgs_py.point_cloud2 as pc2
 
 from dbl_gng_objects.gng_objects import GngObjectStore
-from dbl_gng_objects.yolo_palette import get_rgb, get_rgba_float
+from dbl_gng_objects.yolo_palette import YoloPalette, get_rgb, get_rgba_float
 
 
 def _pack_rgb(r: int, g: int, b: int) -> float:
@@ -56,6 +56,8 @@ class GngObjectsNode(Node):
         self.declare_parameter('nice', 10)                  # prioritas CPU lebih rendah daripada YOLO
         self.declare_parameter('node_size', 0.04)
         self.declare_parameter('edge_width', 0.008)
+        self.declare_parameter('label_size', 0.15)          # tinggi huruf label nama objek (m); 0 = tanpa label
+        self.declare_parameter('label_color', [0.1, 0.1, 0.1])   # RGB 0..1; bawaan gelap agar terbaca di atas peta terang (RViz tidak bisa memberi kotak latar)
         # Penyimpanan antar sesi: kosong = mati (perilaku lama persis). Diisi = GNG (titik, node, edge) disimpan ke berkas .npz dan dimuat lagi saat start.
         self.declare_parameter('persist_file', '')
         # keep_unseen: GNG tetap tampil selama sesi walau objeknya keluar pandangan (false = perilaku lama: dihapus setelah 5 dtk hilang dari peta)
@@ -73,6 +75,10 @@ class GngObjectsNode(Node):
         self.margin = float(g('margin'))
         self.display_points = int(g('display_points'))
         self.node_size, self.edge_width = float(g('node_size')), float(g('edge_width'))
+        self.label_size = float(g('label_size'))
+        self.label_color = [float(v) for v in g('label_color')]
+        self._palette = YoloPalette()
+        self._names: Dict[int, str] = {}                 # nama kelas dari pesan peta; cadangan: daftar kelas bawaan
         self.persist_file = os.path.expanduser(str(g('persist_file')))
         self.store = GngObjectStore(voxel=float(g('voxel')), max_points=int(g('max_points')), train_min_points=int(g('train_min_points')),
                                     train_interval_s=float(g('train_interval_s')), epochs=int(g('epochs')),
@@ -118,6 +124,8 @@ class GngObjectsNode(Node):
                 b = o['bbox_map']
                 objs.append({'id': int(o['global_id']), 'class_id': int(o['class_id']), 'bmin': b['min_bound'], 'bmax': b['max_bound'],
                              'centroid': o['centroid_map']})
+                if o.get('class_name'):
+                    self._names[int(o['class_id'])] = str(o['class_name'])
             except (KeyError, TypeError, ValueError):
                 continue
         self.store.update_objects(objs, time.time())
@@ -207,7 +215,7 @@ class GngObjectsNode(Node):
         arr = MarkerArray()
         ids = {s['id'] for s in snap}
         for oid in self._published_ids - ids:          # objek yang sudah hilang dari peta
-            for ns in ('gng_nodes', 'gng_edges'):
+            for ns in ('gng_nodes', 'gng_edges', 'gng_labels'):
                 d = Marker(); d.header = header; d.ns = ns; d.id = oid; d.action = Marker.DELETE; arr.markers.append(d)
         self._published_ids = ids
 
@@ -232,6 +240,17 @@ class GngObjectsNode(Node):
                         pts.append(Point(x=float(pb[0]), y=float(pb[1]), z=float(pb[2])))
                     e.points = pts
                     arr.markers.append(e)
+                if self.label_size > 0:                  # nama objek di atas jaringannya
+                    t = Marker(); t.header = header; t.ns = 'gng_labels'; t.id = s['id']; t.type = Marker.TEXT_VIEW_FACING; t.action = Marker.ADD
+                    t.text = self._names.get(s['class_id']) or self._palette.get_class_name(s['class_id'])
+                    top = s['nodes'].mean(axis=0)
+                    t.pose.position.x, t.pose.position.y = float(top[0]), float(top[1])
+                    t.pose.position.z = float(s['nodes'][:, 2].max()) + self.label_size
+                    t.pose.orientation.w = 1.0
+                    t.scale.z = self.label_size
+                    t.color.r, t.color.g, t.color.b = self.label_color
+                    t.color.a = 1.0
+                    arr.markers.append(t)
         self.pub_markers.publish(arr)
 
     def _publish_cloud(self) -> None:

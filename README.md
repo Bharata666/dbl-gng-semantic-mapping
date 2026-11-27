@@ -1,7 +1,7 @@
 # Per-Object DBL-GNG for Semantic Mapping
 
 Repository providing the DBL-GNG source code for the paper (manuscript in preparation)
-> Intelligent Robot Guidance: Mask-Based Object Perception and Semantic Mapping on an Indoor Guide Robot Using YOLO11s-seg and an RGB-D Camera<br/>
+> Online Semantic Mapping of Indoor Environment with Topological Approach from Object Instance Segmentation<br/>
 > Bharata Kukuh Hariyanto, Mohamad Yani, Moch. Iskandar Riansyah, Naoyuki Kubota, Fajar Hidayatullah and Muhammad Rio Fernanda
 
 <p align="center">
@@ -41,10 +41,10 @@ Input topic names can be changed with the parameters `points_topic`, `map_topic`
 | Direction | Topic | Type | Content |
 |---|---|---|---|
 | in | `/semantic_map/global_objects_pointcloud` | `sensor_msgs/PointCloud2` | fields `x`, `y`, `z`, `class_id` in the `map` frame |
-| in | `/semantic_map/global_semantic_map` | `std_msgs/String` | JSON: `{"objects": [{"global_id", "class_id", "bbox_map": {"min_bound", "max_bound"}, "centroid_map"}]}` |
+| in | `/semantic_map/global_semantic_map` | `std_msgs/String` | JSON: `{"objects": [{"global_id", "class_id", "class_name", "bbox_map": {"min_bound", "max_bound"}, "centroid_map"}]}` (`class_name` is optional) |
 | in | `/semantic_map/reset_map_cmd` | `std_msgs/Empty` | reset the networks (archived if `persist_file` is set) |
 | in | `/semantic_map/gng_clear_saved` | `std_msgs/Empty` | delete all networks, including saved ones |
-| out | `/semantic_map/gng_markers` | `visualization_msgs/MarkerArray` | nodes and edges per object |
+| out | `/semantic_map/gng_markers` | `visualization_msgs/MarkerArray` | nodes, edges and a class name label per object |
 | out | `/semantic_map/gng_points` | `sensor_msgs/PointCloud2` | accumulated object points |
 
 ## Customize
@@ -56,6 +56,8 @@ Input topic names can be changed with the parameters `points_topic`, `map_topic`
 | `train_interval_s` | 2.0 | minimum time between trainings (s) |
 | `epochs` | 40 | training epochs |
 | `margin` | 0.15 | bounding box margin (m) for assigning points to objects |
+| `label_size` | 0.15 | text height (m) of the object name label, 0 hides the labels |
+| `label_color` | [0.1, 0.1, 0.1] | label text color (RGB, 0 to 1); use `[1.0, 1.0, 1.0]` on a dark background |
 | `persist_file` | empty | `.npz` file that keeps the networks between sessions |
 
 The number of nodes is `M = clip(N/15, 20, 200)` and the number of starting points is `K = clip(M/8, 3, 12)`, with `N` the number of points.
